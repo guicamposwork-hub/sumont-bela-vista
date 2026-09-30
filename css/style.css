@@ -1,0 +1,1114 @@
+/* =========================================================
+   Sumont Bela Vista — Eco Lodge
+   Tokens: brand/brand.md · Layout: references/references.md
+   ========================================================= */
+
+:root {
+  /* Marca */
+  --verde-sumont: #4F674F;
+  --verde-mata: #3F543F;
+  --verde-musgo: #677D67;
+  --verde-salvia: #97C997;
+  --noite: #18211B;
+  /* Neutras */
+  --branco: #FFFFFF;
+  --nevoa: #F7F8F7;
+  --texto: #1E261E;
+  --texto-suave: #4E5A52;
+  --linha: #D6DDD6;
+  /* Texto secundário sobre fundos escuros (tingido, não cinza) */
+  --sobre-verde: #DDE7DD;
+  --sobre-noite: #BCC8BE;
+
+  --font-display: "Fraunces", Georgia, "Times New Roman", serif;
+  --font-body: "Montserrat", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* Escala tipográfica (quarta justa ~1.333 sobre 17px) */
+  --fs-micro: 0.8125rem;
+  --fs-small: 0.875rem;
+  --fs-body: 1.0625rem;
+  --fs-lead: clamp(1.0625rem, 0.2vw + 1rem, 1.1875rem);
+  --fs-h3: clamp(1.25rem, 0.5vw + 1.05rem, 1.625rem);
+  --fs-h2: clamp(1.75rem, 1.8vw + 1.3rem, 3.25rem);
+  --fs-statement: clamp(1.25rem, 0.8vw + 1rem, 1.875rem);
+  --fs-manifesto: clamp(1.625rem, 1.8vw + 1.05rem, 3rem);
+  --fs-display: clamp(2.25rem, 2vw + 1.4rem, 3.5rem);
+
+  --gutter: clamp(16px, 4.4vw, 64px);
+  --container: 1240px;
+  /* Margem lateral: gutter no celular; em telas largas, centraliza o conteúdo em 1240px */
+  --pad-x: max(var(--gutter), calc((100vw - var(--container)) / 2));
+  --section-y: clamp(88px, 9vw, 144px);
+  --stack-head: clamp(40px, 5vw, 72px); /* título da seção -> conteúdo */
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 28px;
+  --radius-pill: 999px;
+
+  --ease-out: cubic-bezier(.16, 1, .3, 1);
+  --ease-soft: cubic-bezier(.22, .8, .24, 1);
+
+  --glass-bg: rgb(255 255 255 / .14);
+  --glass-line: rgb(255 255 255 / .28);
+}
+
+/* ---------- Base ---------- */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+html:not(.lenis) { scroll-behavior: smooth; }
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-stopped { overflow: hidden; }
+
+body {
+  margin: 0;
+  background: var(--nevoa);
+  color: var(--texto);
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  line-height: 1.65;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: clip;
+  caret-color: var(--verde-sumont);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: rgb(79 103 79 / .15);
+  accent-color: var(--verde-sumont);
+}
+
+::selection { background: var(--verde-salvia); color: var(--texto); }
+
+html { scrollbar-width: thin; scrollbar-color: var(--verde-musgo) var(--nevoa); }
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: var(--nevoa); }
+::-webkit-scrollbar-thumb { background: var(--verde-musgo); border-radius: 10px; border: 2px solid var(--nevoa); }
+
+img, video { display: block; max-width: 100%; }
+section[id] { scroll-margin-top: 88px; }
+img { height: auto; }
+
+h1, h2, h3 {
+  overflow-wrap: break-word;
+  hyphens: manual;
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+  font-variation-settings: "SOFT" 100;
+  font-weight: 400;
+  margin: 0;
+  text-wrap: balance;
+}
+h2 { font-size: var(--fs-h2); line-height: 1.08; letter-spacing: -0.016em; }
+h3 { font-size: var(--fs-h3); line-height: 1.2; letter-spacing: -0.008em; }
+p { margin: 0; text-wrap: pretty; }
+a { color: inherit; }
+strong { font-weight: 600; }
+
+:focus-visible {
+  outline: 2px solid var(--verde-salvia);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+.skip {
+  position: fixed;
+  left: 16px;
+  top: 16px;
+  transform: translateY(calc(-100% - 40px)); /* escondido mesmo com texto ampliado */
+  z-index: 300;
+  padding: 10px 18px;
+  background: var(--branco);
+  color: var(--texto);
+  border-radius: var(--radius-pill);
+  text-decoration: none;
+  font-weight: 600;
+}
+.skip:focus { transform: none; }
+
+/* Linhas de texto divididas pelo JS (títulos revelados linha a linha) */
+.line { display: block; overflow: hidden; padding-bottom: 0.08em; margin-bottom: -0.08em; }
+.line__inner { display: block; }
+
+/* ---------- Logos ---------- */
+
+.logo { display: block; width: 100%; height: auto; aspect-ratio: 2068 / 587; color: inherit; }
+
+/* ---------- Ícones e botões (pílula + círculo, padrão NESTORA) ---------- */
+
+.icon { width: 1.2em; height: 1.2em; flex: none; }
+
+.btn {
+  --btn-bg: var(--verde-sumont);
+  --btn-fg: var(--branco);
+  --btn-icon-bg: var(--branco);
+  --btn-icon-fg: var(--verde-sumont);
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 52px;
+  padding: 6px 6px 6px 24px;
+  border-radius: var(--radius-pill);
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  border: 1px solid transparent;
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: 0.005em;
+  line-height: 1.2;
+  text-decoration: none;
+  transition: background-color .35s var(--ease-out), color .35s var(--ease-out), border-color .35s var(--ease-out);
+}
+.btn__label { white-space: normal; text-wrap: balance; }
+.btn__icon {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--btn-icon-bg);
+  color: var(--btn-icon-fg);
+  flex: none;
+  transition: transform .5s var(--ease-out), background-color .35s var(--ease-out);
+}
+.btn:hover .btn__icon { transform: rotate(-12deg) scale(1.06); }
+.btn:active { transform: scale(.98); }
+
+.btn--primary:hover { --btn-bg: var(--verde-mata); }
+.btn--light { --btn-bg: var(--branco); --btn-fg: var(--verde-mata); --btn-icon-bg: var(--verde-sumont); --btn-icon-fg: var(--branco); }
+.btn--light:hover { --btn-bg: var(--nevoa); }
+.btn--glass {
+  --btn-bg: var(--glass-bg);
+  --btn-fg: var(--branco);
+  border-color: var(--glass-line);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+          backdrop-filter: blur(16px) saturate(140%);
+}
+.btn--glass:hover { --btn-bg: rgb(255 255 255 / .22); }
+.btn--outline { --btn-bg: transparent; border-color: rgb(255 255 255 / .5); }
+.btn--outline:hover { --btn-bg: rgb(255 255 255 / .1); border-color: var(--branco); }
+.btn--large { min-height: 60px; padding-left: 30px; font-size: 1rem; }
+.btn--large .btn__icon { width: 48px; height: 48px; }
+
+.link {
+  font-weight: 600;
+  color: var(--verde-sumont);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.32em;
+  transition: text-underline-offset .3s var(--ease-out), color .2s;
+}
+.link:hover { text-underline-offset: 0.5em; }
+.link--light { color: var(--branco); }
+
+/* ---------- Cortina de chegada ---------- */
+
+.curtain { display: none; }
+.js .curtain {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  background: var(--verde-sumont);
+  color: var(--nevoa);
+}
+.js .curtain { clip-path: inset(0 0 0% 0); animation: curtain-safety .6s ease 5s forwards; }
+@keyframes curtain-safety { to { opacity: 0; visibility: hidden; } }
+.curtain__mark { width: 64px; height: auto; }
+
+/* =========================================================
+   MENU — pílula de vidro (Nuffo / PineNest)
+   ========================================================= */
+
+.nav {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 50;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 16px;
+  padding: max(18px, env(safe-area-inset-top)) var(--pad-x) 18px;
+  color: var(--branco);
+  transition: transform .6s var(--ease-out), color .4s var(--ease-out);
+}
+.nav.is-hidden { transform: translateY(-120%); }
+.nav.is-hidden:focus-within { transform: none; }
+
+.nav__brand { display: block; width: clamp(118px, 10vw, 150px); padding-block: 6px; color: inherit; }
+
+.nav__pill {
+  display: none;
+  gap: 2px;
+  padding: 5px;
+  border-radius: var(--radius-pill);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-line);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+          backdrop-filter: blur(16px) saturate(140%);
+  transition: background-color .4s var(--ease-out), border-color .4s var(--ease-out);
+}
+.nav__pill a {
+  padding: 9px 16px;
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-small);
+  font-weight: 500;
+  text-decoration: none;
+  transition: background-color .3s var(--ease-out);
+}
+.nav__pill a:hover { background: rgb(255 255 255 / .16); }
+.nav__pill a.is-current { background: var(--branco); color: var(--verde-mata); }
+
+.nav__cta { justify-self: end; font-size: var(--fs-small); min-height: 48px; padding-left: 20px; }
+.nav__cta .btn__icon { width: 36px; height: 36px; --btn-icon-bg: var(--branco); --btn-icon-fg: var(--verde-sumont); }
+.nav__cta .btn__label { display: none; }
+
+/* Depois do hero: vidro claro */
+.nav.is-solid { color: var(--verde-mata); }
+.nav.is-solid .nav__pill { background: rgb(247 248 247 / .78); border-color: rgb(63 84 63 / .12); }
+.nav.is-solid .nav__pill a:hover { background: rgb(63 84 63 / .08); }
+.nav.is-solid .nav__pill a.is-current { background: var(--verde-sumont); color: var(--branco); }
+.nav.is-solid .nav__cta { --btn-bg: var(--verde-sumont); border-color: var(--verde-sumont); }
+.nav.is-solid .nav__cta:hover { --btn-bg: var(--verde-mata); }
+.nav.is-solid .nav__brand {
+  padding: 8px 14px;
+  margin: -8px -14px;
+  border-radius: var(--radius-pill);
+  background: rgb(247 248 247 / .78);
+  -webkit-backdrop-filter: blur(16px);
+          backdrop-filter: blur(16px);
+  box-sizing: content-box;
+}
+
+@media (min-width: 560px) {
+  .nav__cta .btn__label { display: inline; }
+}
+@media (min-width: 1080px) {
+  .nav { grid-template-columns: 1fr auto 1fr; }
+  .nav__pill { display: flex; }
+}
+
+/* =========================================================
+   HERO — SUMONT atrás da cabana (NESTORA + LAVILLA)
+   ========================================================= */
+
+.hero {
+  position: relative;
+  height: 100vh;
+  height: 100svh;
+  min-height: 620px;
+  container-type: size; /* a cena usa cqw/cqh: cobre o hero mesmo quando ele é mais alto que a tela */
+  overflow: hidden;
+  background: #2E3A2C;
+  color: var(--branco);
+  isolation: isolate;
+}
+
+/* A cena mantém a proporção da foto e cobre a tela; tudo dentro dela usa % da foto,
+   então palavra, recorte e chips ficam sempre alinhados.
+   Regra: elementos que POSICIONAM (.hero__scene, .hero__word-pos, .chip) nunca são animados;
+   o GSAP só anima os internos (.hero__layers, .hero__word, imagens). Se o GSAP animar um
+   elemento com a propriedade CSS "translate", ele a converte em transform e o
+   alinhamento se perde. */
+.hero__scene {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  /* 110vw: com o deslocamento de 47% e o parallax do mouse, a foto sempre cobre as bordas */
+  width: max(110vw, 180vh);
+  width: max(110cqw, 180cqh);
+  aspect-ratio: 3812 / 2172;
+  translate: -47% -50%;
+  z-index: 0;
+}
+.hero__layers { position: absolute; inset: 0; }
+.hero__bg,
+.hero__cabin { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.hero__bg { z-index: 0; }
+.hero__word-pos {
+  position: absolute;
+  z-index: 1;
+  left: 47%;
+  bottom: 45%;
+  width: min(92vw, 1680px);
+  translate: -50% 0;
+}
+.hero__word {
+  display: block;
+  width: 100%;
+  height: auto;
+  color: rgb(255 255 255 / .94);
+  filter: drop-shadow(0 18px 40px rgb(40 30 10 / .18));
+}
+.hero__cabin { z-index: 2; }
+
+.chip {
+  position: absolute;
+  z-index: 3;
+  left: var(--x);
+  top: var(--y);
+  display: none;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px 8px 10px;
+  border-radius: var(--radius-pill);
+  background: rgb(24 33 27 / .28);
+  border: 1px solid var(--glass-line);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+          backdrop-filter: blur(14px) saturate(140%);
+  color: var(--branco);
+  font-size: var(--fs-micro);
+  font-weight: 500;
+  white-space: nowrap;
+  margin: -18px 0 0 -12px; /* centraliza o ponto na coordenada, sem "translate" */
+}
+.chip__dot {
+  position: relative;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--verde-salvia);
+  box-shadow: 0 0 0 4px rgb(151 201 151 / .28);
+}
+.chip__dot::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 1px solid rgb(151 201 151 / .7);
+  animation: ping 2.6s var(--ease-out) infinite;
+}
+@keyframes ping {
+  0% { transform: scale(.6); opacity: 1; }
+  70%, 100% { transform: scale(2.2); opacity: 0; }
+}
+
+.hero__shade {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  background:
+    linear-gradient(to bottom, rgb(24 33 27 / .38) 0%, rgb(24 33 27 / 0) 22%),
+    radial-gradient(120% 70% at 0% 100%, rgb(24 33 27 / .62) 0%, rgb(24 33 27 / 0) 60%),
+    linear-gradient(to top, rgb(24 33 27 / .72) 0%, rgb(24 33 27 / .3) 30%, rgb(24 33 27 / 0) 52%);
+}
+
+.hero__content {
+  position: absolute;
+  inset: auto 0 0;
+  z-index: 5;
+  display: grid;
+  gap: 28px;
+  padding: 0 var(--pad-x) clamp(24px, 4.5vh, 48px);
+}
+.hero__copy { display: grid; gap: 18px; justify-items: start; max-width: 36rem; }
+.hero__title {
+  font-size: var(--fs-display);
+  line-height: 1.04;
+  letter-spacing: -0.02em;
+  font-weight: 400;
+  max-width: 17ch;
+}
+.hero__lead { font-size: var(--fs-lead); line-height: 1.5; color: rgb(255 255 255 / .9); max-width: 34ch; }
+.hero__copy .btn { margin-top: 6px; }
+
+.hero__stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px 20px;
+  margin: 0;
+  padding-top: 20px;
+  border-top: 1px solid rgb(255 255 255 / .24);
+}
+.hero__stats > div { display: flex; flex-direction: column-reverse; gap: 2px; }
+.hero__stats dd {
+  margin: 0;
+  font-family: var(--font-display);
+  font-variation-settings: "SOFT" 100;
+  font-size: clamp(1.375rem, 0.9vw + 1rem, 2rem);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: lining-nums;
+}
+.hero__stats dt { font-size: var(--fs-micro); color: rgb(255 255 255 / .82); font-weight: 500; }
+
+@media (min-width: 900px) {
+  .chip { display: inline-flex; }
+  .hero__content {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    column-gap: 48px;
+  }
+  .hero__stats {
+    grid-template-columns: repeat(4, auto);
+    gap: 0;
+    padding-top: 0;
+    border-top: 0;
+  }
+  .hero__stats > div { padding: 0 clamp(18px, 2vw, 32px); border-left: 1px solid rgb(255 255 255 / .26); }
+  .hero__stats > div:last-child { padding-right: 0; }
+}
+
+
+/* Celular em pé: composição vertical (imagens *-v), SUMONT no céu acima da cabana */
+@media (max-width: 899px) and (orientation: portrait) {
+  .hero__scene { width: max(112cqw, calc(100cqh * 0.8056)); aspect-ratio: 1856 / 2304; translate: -46% -50%; }
+  .hero__word-pos { left: 46%; bottom: auto; top: 17cqh; }
+}
+/* Telas estreitas (em pé ou deitadas): tipografia e números do hero */
+@media (max-width: 899px) {
+  .hero__content { gap: 20px; }
+  .hero__title { font-size: clamp(1.875rem, 7vw, 2.5rem); }
+  .hero__stats { grid-template-columns: repeat(auto-fit, minmax(4.75rem, 1fr)); gap: 10px 8px; padding-top: 16px; }
+  .hero__stats dd { font-size: 1.3125rem; }
+  .hero__stats dt { font-size: 0.6875rem; line-height: 1.3; max-width: 9ch; }
+}
+
+/* =========================================================
+   MANIFESTO
+   ========================================================= */
+
+.manifesto {
+  padding: var(--section-y) var(--pad-x);
+  background: var(--nevoa);
+}
+.manifesto__text {
+  max-width: 30ch;
+  margin-inline: auto;
+  font-family: var(--font-display);
+  font-variation-settings: "SOFT" 100;
+  font-size: var(--fs-manifesto);
+  font-weight: 350;
+  line-height: 1.14;
+  letter-spacing: -0.018em;
+  color: var(--verde-mata);
+  text-align: center;
+  text-wrap: balance;
+}
+
+/* =========================================================
+   MÍDIA — revelação e parallax
+   ========================================================= */
+
+.media { position: relative; overflow: hidden; }
+.media picture, .hero__scene picture { display: contents; }
+.media img, .media video { width: 100%; height: 100%; object-fit: cover; }
+.media img[data-parallax] { scale: 1.16; }
+
+/* =========================================================
+   O LUGAR
+   ========================================================= */
+
+.place { padding: 0 var(--pad-x); background: var(--nevoa); }
+.place__text { display: grid; gap: clamp(20px, 2.4vw, 32px); }
+.place__title { color: var(--verde-sumont); max-width: 16ch; }
+.place__statement {
+  max-width: 40ch;
+  font-family: var(--font-display);
+  font-variation-settings: "SOFT" 100;
+  font-size: var(--fs-statement);
+  line-height: 1.32;
+  font-weight: 350;
+  letter-spacing: -0.008em;
+  color: var(--texto);
+}
+.place__figure { margin: clamp(56px, 7vw, 112px) 0 0; }
+.place__figure .media { aspect-ratio: 4 / 5; border-radius: var(--radius-lg); }
+.place__figure figcaption { padding-top: 14px; font-size: var(--fs-small); color: var(--texto-suave); }
+
+@media (min-width: 900px) {
+  .place__text { grid-template-columns: 5fr 7fr; align-items: start; }
+  .place__statement { padding-top: 0.4em; }
+  .place__figure .media { aspect-ratio: 21 / 9; }
+}
+
+/* =========================================================
+   AS CABANAS
+   ========================================================= */
+
+.cabins { padding: var(--section-y) var(--pad-x) 0; background: var(--nevoa); }
+.cabins__head { display: grid; gap: 16px; margin-bottom: var(--stack-head); }
+.cabins__head h2 { max-width: 20ch; color: var(--verde-mata); }
+.cabins__head p { max-width: 40ch; font-size: var(--fs-lead); color: var(--texto-suave); }
+
+.cabin { margin-bottom: clamp(72px, 9vw, 128px); }
+.cabin:last-child { margin-bottom: 0; }
+
+.cabin__media { aspect-ratio: 4 / 5; border-radius: var(--radius-lg); }
+.cabin__media::after {
+  content: "";
+  position: absolute;
+  inset: 50% 0 0;
+  background: linear-gradient(to top, rgb(24 33 27 / .55), transparent);
+  pointer-events: none;
+}
+.cabin__name {
+  position: absolute;
+  z-index: 1;
+  left: clamp(20px, 3vw, 48px);
+  bottom: clamp(12px, 2vw, 28px);
+  color: var(--nevoa);
+  font-size: clamp(3.5rem, 8vw, 7.5rem);
+  line-height: 0.9;
+  font-weight: 350;
+  letter-spacing: -0.035em;
+}
+.cabin__name .ch { display: inline-block; }
+
+.cabin__body { display: grid; gap: 16px; padding-top: 32px; }
+.cabin__trait {
+  font-family: var(--font-display);
+  font-variation-settings: "SOFT" 100;
+  font-size: var(--fs-h3);
+  line-height: 1.1;
+  color: var(--verde-sumont);
+}
+.cabin__text { max-width: 44ch; color: var(--texto); }
+.cabin__inside {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  margin-top: 8px;
+}
+.cabin .link { justify-self: start; margin-top: 0; padding-block: 8px; }
+
+@media (min-width: 900px) {
+  .cabin__media { aspect-ratio: 21 / 10; }
+  .cabin__body {
+    grid-template-columns: 1fr 1.25fr 1fr;
+    grid-template-areas: "trait text inside" "trait link inside";
+    align-items: start;
+    column-gap: clamp(32px, 4vw, 72px);
+    padding-top: clamp(40px, 4vw, 64px);
+  }
+  .cabin__trait { grid-area: trait; }
+  .cabin__text { grid-area: text; }
+  .cabin .link { grid-area: link; }
+  .cabin__inside {
+    grid-area: inside;
+    position: relative;
+    z-index: 2;
+    margin-top: calc(clamp(96px, 10vw, 170px) * -1);
+    box-shadow: 0 30px 60px -28px rgb(24 33 27 / .5);
+  }
+  .cabin--flip .cabin__name { left: auto; right: clamp(20px, 3vw, 48px); }
+  .cabin--flip .cabin__body { grid-template-areas: "inside text trait" "inside link trait"; }
+  .cabin--flip .cabin__trait { text-align: right; }
+}
+
+/* =========================================================
+   UM DIA NO SUMONT
+   ========================================================= */
+
+.day {
+  --day-bg: var(--verde-mata);
+  --day-fg: var(--nevoa);
+  margin-top: var(--section-y);
+  background: var(--day-bg);
+  color: var(--day-fg);
+}
+.day__stage { padding: var(--section-y) 0; overflow: hidden; }
+.day__track { display: grid; gap: 40px; }
+.day__head { display: grid; gap: 16px; padding: 0 var(--pad-x); align-content: center; }
+.day__head h2 { max-width: 12ch; }
+.day__head p { max-width: 26ch; font-size: var(--fs-lead); opacity: .86; }
+.day__progress { display: none; width: 160px; height: 2px; margin-top: 16px; background: currentColor; opacity: .25; position: relative; }
+.day__progress span { position: absolute; inset: 0; background: currentColor; transform-origin: left; transform: scaleX(0); }
+
+.day__list {
+  list-style: none;
+  margin: 0;
+  padding: 0 var(--pad-x) 8px;
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+.day__list::-webkit-scrollbar { display: none; }
+
+.moment { flex: 0 0 min(78vw, 360px); scroll-snap-align: start; display: grid; gap: 8px; }
+.moment__media { aspect-ratio: 4 / 5; border-radius: var(--radius-lg); overflow: hidden; }
+.moment__media img { width: 100%; height: 100%; object-fit: cover; }
+.moment__time {
+  margin-top: 10px;
+  font-family: var(--font-display);
+  font-variation-settings: "SOFT" 100;
+  font-size: clamp(2rem, 1.4vw + 1.25rem, 3rem);
+  line-height: 1;
+  font-weight: 300;
+  letter-spacing: -0.03em;
+  font-variant-numeric: lining-nums;
+}
+.moment__text { font-size: var(--fs-lead); opacity: .88; }
+
+/* Desktop: pinado, a faixa corre na horizontal */
+.day.is-pinned .day__stage { height: 100vh; display: flex; align-items: center; padding: 0; }
+.day.is-pinned .day__track {
+  display: flex;
+  align-items: center;
+  gap: clamp(56px, 6vw, 120px);
+  padding: 0 var(--pad-x);
+  will-change: transform;
+}
+.day.is-pinned .day__head { flex: 0 0 clamp(260px, 22vw, 340px); padding: 0; }
+.day.is-pinned .day__progress { display: block; }
+.day.is-pinned .day__list { overflow: visible; padding: 0; gap: clamp(32px, 4vw, 72px); }
+.day.is-pinned .moment { flex: 0 0 max(240px, min(26vw, 420px, 44vh)); }
+.day.is-pinned .moment:nth-child(even) { margin-top: 12vh; }
+
+/* =========================================================
+   ALÉM DA CABANA
+   ========================================================= */
+
+.beyond { padding: var(--section-y) var(--pad-x); background: var(--noite); color: var(--nevoa); }
+.beyond__head { display: grid; gap: 16px; margin-bottom: var(--stack-head); }
+.beyond__head h2 { max-width: 16ch; }
+.beyond__head p { max-width: 40ch; font-size: var(--fs-lead); color: var(--sobre-noite); }
+
+.beyond__body { display: grid; gap: 32px; }
+.beyond__frame {
+  position: relative;
+  order: -1;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: #223024;
+}
+.beyond__frame img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transform: scale(1.08);
+  filter: blur(6px);
+  transition: opacity .9s var(--ease-out), transform 1.4s var(--ease-out), filter .9s var(--ease-out);
+}
+.beyond__frame img.is-active { opacity: 1; transform: scale(1); filter: blur(0); }
+
+.beyond__list { list-style: none; margin: 0; padding: 0; }
+.place-item {
+  display: grid;
+  gap: 8px;
+  padding: 22px 0;
+  border-top: 1px solid rgb(247 248 247 / .16);
+}
+.place-item:last-child { border-bottom: 1px solid rgb(247 248 247 / .16); }
+.place-item h3 {
+  font-size: clamp(1.75rem, 2vw + 1rem, 3.25rem);
+  line-height: 1;
+  font-weight: 350;
+  letter-spacing: -0.028em;
+  color: rgb(247 248 247 / .4);
+  transition: color .5s var(--ease-out), transform .6s var(--ease-out);
+}
+.place-item p {
+  max-width: 38ch;
+  color: var(--sobre-noite);
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity .45s var(--ease-out), transform .6s var(--ease-out);
+}
+.place-item h3 button {
+  all: unset;
+  cursor: pointer;
+  border-radius: 6px;
+}
+.place-item h3 button:focus-visible { outline: 2px solid var(--verde-salvia); outline-offset: 6px; }
+.place-item.is-active h3 { color: var(--nevoa); transform: translateX(8px); }
+.place-item.is-active p { opacity: 1; transform: none; }
+
+@media (min-width: 900px) {
+  .beyond__body { grid-template-columns: 1fr 1fr; column-gap: clamp(40px, 6vw, 112px); align-items: center; }
+  .beyond__frame { order: 0; aspect-ratio: 1 / 1; }
+}
+
+/* =========================================================
+   FILME — o Eco Lodge em um minuto
+   ========================================================= */
+
+.film {
+  padding: 0 var(--pad-x) var(--section-y);
+  background: var(--noite); /* continua o escuro de "Além da cabana": clima de cinema */
+  color: var(--nevoa);
+}
+.film__head { display: grid; gap: 16px; margin-bottom: var(--stack-head); }
+.film__head h2 { max-width: 16ch; }
+.film__head p { max-width: 40ch; font-size: var(--fs-lead); color: var(--sobre-noite); }
+
+.film__frame { aspect-ratio: 16 / 9; border-radius: var(--radius-lg); background: #0f1511; }
+.film__video { display: block; }
+.film__frame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgb(24 33 27 / .55), transparent 55%);
+  pointer-events: none;
+  transition: opacity .5s var(--ease-out);
+}
+.film__play {
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 24px 8px 8px;
+  border: 1px solid var(--glass-line);
+  border-radius: var(--radius-pill);
+  background: rgb(24 33 27 / .35);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+          backdrop-filter: blur(14px) saturate(140%);
+  color: var(--branco);
+  font: 600 0.9375rem/1.2 var(--font-body);
+  cursor: pointer;
+  transition: background-color .3s var(--ease-out), opacity .4s var(--ease-out);
+}
+.film__play:hover { background: rgb(24 33 27 / .55); }
+.film__play-icon {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--branco);
+  color: var(--verde-sumont);
+  transition: transform .5s var(--ease-out);
+}
+.film__play-icon svg { width: 24px; height: 24px; margin-left: 3px; }
+.film__play:hover .film__play-icon { transform: scale(1.06); }
+.film__play-label { white-space: nowrap; }
+.film__time { margin-left: 6px; font-weight: 500; color: var(--sobre-noite); font-variant-numeric: tabular-nums; }
+
+/* Tocando: some o botão e a sombra; aparecem os controles nativos */
+.film__frame.is-playing::after,
+.film__frame.is-playing .film__play { opacity: 0; pointer-events: none; }
+
+@media (max-width: 899px) {
+  .film { padding-inline: 16px; }
+  .film__head { padding-inline: 8px; }
+  .film__frame { border-radius: 20px; }
+  .film__play { padding: 6px 18px 6px 6px; font-size: 0.875rem; }
+  .film__play-icon { width: 48px; height: 48px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .film__play:hover .film__play-icon { transform: none; }
+}
+
+/* =========================================================
+   A COTA
+   ========================================================= */
+
+.share { display: grid; gap: 56px; padding: var(--section-y) var(--pad-x); background: var(--nevoa); }
+.share__text { display: grid; gap: 28px; align-content: start; }
+.share__text h2 { max-width: 18ch; color: var(--verde-mata); }
+.share__lead { max-width: 44ch; font-size: var(--fs-lead); color: var(--texto-suave); }
+
+.steps { list-style: none; counter-reset: step; margin: 8px 0 0; padding: 0; display: grid; }
+.steps li {
+  counter-increment: step;
+  display: grid;
+  grid-template-columns: 3rem 1fr;
+  align-items: baseline;
+  padding: 18px 0;
+  border-top: 1px solid var(--linha);
+}
+.steps li:last-child { border-bottom: 1px solid var(--linha); }
+.steps li::before {
+  content: counter(step);
+  font-family: var(--font-display);
+  font-variation-settings: "SOFT" 100;
+  font-size: 1.625rem;
+  line-height: 1;
+  color: var(--verde-sumont);
+}
+
+.share__cta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 24px; margin-top: 12px; }
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0.6em 1.15em 0.6em 0.9em;
+  border-radius: var(--radius-pill);
+  background: var(--verde-salvia);
+  color: var(--texto);
+  font-size: var(--fs-small);
+  font-weight: 600;
+}
+.badge__dot { width: 8px; height: 8px; border-radius: 50%; background: var(--verde-mata); }
+
+.share__figure { margin: 0; aspect-ratio: 4 / 5; border-radius: var(--radius-lg); }
+.share__figure img { object-position: 22% center; }
+
+@media (min-width: 900px) {
+  .share { grid-template-columns: 1.1fr 1fr; column-gap: clamp(48px, 7vw, 128px); align-items: center; }
+}
+
+/* =========================================================
+   INVESTIMENTO
+   ========================================================= */
+
+.invest {
+  position: relative;
+  overflow: hidden;
+  padding: var(--section-y) var(--pad-x);
+  background: var(--verde-sumont);
+  color: var(--branco);
+}
+.contours { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.contours path { fill: none; stroke: rgb(255 255 255 / .22); stroke-width: 1.2; vector-effect: non-scaling-stroke; }
+.invest__inner { position: relative; display: grid; gap: clamp(40px, 4.4vw, 64px); }
+.invest__head { display: grid; gap: 16px; }
+.invest__head h2 { max-width: 16ch; }
+.invest__head p { max-width: 44ch; font-size: var(--fs-lead); color: var(--sobre-verde); }
+
+.figures { display: grid; margin: 0; }
+.figures > div {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 8px;
+  padding: 24px 0;
+  border-top: 1px solid rgb(255 255 255 / .24);
+}
+.figures dd {
+  margin: 0;
+  font-family: var(--font-display);
+  font-variation-settings: "SOFT" 100;
+  font-size: clamp(1.875rem, 1.3vw + 1.15rem, 2.75rem);
+  line-height: 1;
+  font-weight: 350;
+  letter-spacing: -0.018em;
+  font-variant-numeric: lining-nums tabular-nums;
+  color: var(--verde-salvia);
+}
+.figures dt { font-size: 0.9375rem; color: var(--sobre-verde); }
+
+.schedule h3 { font-size: 1.25rem; margin-bottom: 22px; }
+.schedule__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 18px; position: relative; }
+.schedule__list::before {
+  content: "";
+  position: absolute;
+  left: 6px;
+  top: 6px;
+  bottom: 6px;
+  width: 1px;
+  background: rgb(255 255 255 / .4);
+  transform-origin: top;
+  transform: scaleY(var(--draw, 1));
+}
+.schedule__list li { position: relative; padding-left: 32px; font-size: 0.9375rem; font-weight: 500; line-height: 13px; }
+.schedule__list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--verde-salvia);
+  box-shadow: 0 0 0 4px var(--verde-sumont);
+}
+.invest__note { font-size: var(--fs-small); color: var(--sobre-verde); max-width: 60ch; }
+.invest .btn { justify-self: start; --btn-icon-bg: var(--branco); --btn-icon-fg: var(--verde-sumont); }
+
+@media (min-width: 900px) {
+  .figures { grid-template-columns: repeat(3, 1fr); column-gap: 40px; }
+  .schedule__list { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0; }
+  .schedule__list::before { left: 6px; right: 6px; top: 6px; bottom: auto; width: auto; height: 1px; transform-origin: left; transform: scaleX(var(--draw, 1)); }
+  .schedule__list li { padding: 28px 0 0; line-height: 1.4; }
+}
+
+/* =========================================================
+   DÚVIDAS
+   ========================================================= */
+
+.faq { display: grid; gap: 40px; padding: var(--section-y) var(--pad-x); background: var(--nevoa); }
+.faq__head { display: grid; gap: 16px; align-content: start; }
+.faq__head h2 { color: var(--verde-mata); max-width: 12ch; }
+.faq__head p { color: var(--texto-suave); }
+
+.faq__list details { border-top: 1px solid var(--linha); }
+.faq__list details:last-child { border-bottom: 1px solid var(--linha); }
+.faq__list summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  padding: 24px 0;
+  cursor: pointer;
+  list-style: none;
+  font-family: var(--font-display);
+  font-variation-settings: "SOFT" 100;
+  font-size: clamp(1.125rem, 0.4vw + 1rem, 1.3125rem);
+  line-height: 1.3;
+  color: var(--texto);
+  transition: color .25s;
+}
+.faq__list summary:hover { color: var(--verde-sumont); }
+.faq__list summary::-webkit-details-marker { display: none; }
+.faq__list summary::after {
+  content: "";
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--linha);
+  background:
+    linear-gradient(var(--verde-sumont), var(--verde-sumont)) center / 12px 1.5px no-repeat,
+    linear-gradient(var(--verde-sumont), var(--verde-sumont)) center / 1.5px 12px no-repeat;
+  transition: transform .5s var(--ease-out), background-color .3s, border-color .3s;
+}
+.faq__list details[open] summary::after { transform: rotate(135deg); border-color: var(--verde-salvia); background-color: rgb(151 201 151 / .25); }
+.faq__answer { overflow: hidden; }
+.faq__answer p { max-width: 60ch; padding: 0 56px 26px 0; color: var(--texto-suave); }
+
+@media (min-width: 900px) {
+  .faq { grid-template-columns: 1fr 1.6fr; column-gap: clamp(48px, 7vw, 128px); }
+  .faq__head { position: sticky; top: 120px; }
+}
+
+/* =========================================================
+   CHAMADA FINAL — o vídeo cresce até ocupar a tela
+   ========================================================= */
+
+.closing {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+  min-height: 100svh;
+  padding: var(--section-y) var(--pad-x);
+  color: var(--branco);
+  text-align: center;
+  background: var(--nevoa);
+  isolation: isolate;
+}
+.closing__frame {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  clip-path: inset(0 round 0);
+}
+.closing__frame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, rgb(24 33 27 / .58), rgb(24 33 27 / .28) 72%);
+}
+.closing__video { width: 100%; height: 100%; object-fit: cover; background: var(--noite); }
+.closing__inner { display: grid; gap: 24px; justify-items: center; max-width: 920px; }
+.closing h2 { font-size: clamp(2.25rem, 2.8vw + 1.2rem, 4rem); line-height: 1.05; letter-spacing: -0.018em; font-weight: 350; }
+.closing p { font-size: var(--fs-lead); max-width: 34ch; color: rgb(255 255 255 / .92); }
+.closing .btn { margin-top: 12px; }
+
+/* ---------- Rodapé ---------- */
+
+.footer {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  gap: 48px;
+  padding: clamp(72px, 9vw, 128px) var(--pad-x) 36px;
+  background: var(--noite);
+  color: var(--sobre-noite);
+  font-size: 0.9375rem;
+}
+.footer__word {
+  width: 100%;
+  height: auto;
+  color: rgb(247 248 247 / .06);
+  order: 2;
+}
+.footer__grid { display: grid; gap: 40px; }
+.footer__brand { display: grid; gap: 20px; }
+.footer__brand .logo { width: 180px; color: var(--nevoa); }
+.footer__brand p { max-width: 30ch; }
+.footer__nav { display: grid; gap: 0; }
+.footer__nav a { display: block; padding-block: 10px; text-decoration: none; color: var(--nevoa); transition: color .2s; }
+.footer__nav a:hover { color: var(--verde-salvia); }
+.footer__info { display: grid; gap: 8px; align-content: start; }
+.footer__info .link { display: inline-block; padding-block: 10px; }
+.footer__legal { order: 3; font-size: var(--fs-micro); color: #97A69A; padding-top: 24px; padding-right: 72px; /* não fica sob o botão flutuante */ border-top: 1px solid rgb(247 248 247 / .12); }
+
+@media (min-width: 900px) {
+  .footer__grid { grid-template-columns: 1.4fr 1fr 1fr; }
+  .footer__info { text-align: right; justify-items: end; }
+}
+
+/* ---------- WhatsApp flutuante ---------- */
+
+.wa-float {
+  position: fixed;
+  right: calc(20px + env(safe-area-inset-right));
+  bottom: calc(20px + env(safe-area-inset-bottom));
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: var(--verde-sumont);
+  color: var(--branco);
+  box-shadow: 0 14px 30px -12px rgb(24 33 27 / .6);
+  opacity: 0;
+  transform: translateY(16px) scale(.9);
+  pointer-events: none;
+  transition: opacity .5s var(--ease-out), transform .5s var(--ease-out), background-color .2s;
+}
+.wa-float .icon { width: 26px; height: 26px; }
+.wa-float:hover { background: var(--verde-mata); }
+.wa-float.is-visible { opacity: 1; transform: none; pointer-events: auto; }
+
+/* ---------- Movimento reduzido ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  html:not(.lenis) { scroll-behavior: auto; }
+  .chip__dot::after { animation: none; }
+  .media img[data-parallax] { scale: 1; }
+  /* Sem deslocamento, giro ou zoom; cores e opacidades continuam dando retorno */
+  .btn:hover .btn__icon,
+  .btn:active,
+  .place-item.is-active h3,
+  .place-item p,
+  .wa-float,
+  .beyond__frame img { transform: none; }
+  .beyond__frame img { filter: none; }
+  .faq__list summary::after { transition-property: background-color, border-color; }
+  .nav { transition-property: color; }
+  .nav.is-hidden { transform: none; }
+}
+
+/* Celular deitado: as fotos horizontais ficam em quadro horizontal (sem corte lateral) */
+@media (max-width: 899px) and (orientation: landscape) {
+  .cabin__media, .place__figure .media, .share__figure { aspect-ratio: 16 / 9; }
+}
+
+/* Tela baixa e deitada (celular na horizontal): SUMONT menor e mais alto, sem encostar no título */
+@media (orientation: landscape) and (max-height: 520px) {
+  .hero__word-pos { width: min(60vw, 560px); bottom: 62%; }
+}
+
+/* "Um dia no Sumont" no celular: cartões menores, margens mais generosas */
+@media (max-width: 899px) {
+  .day__head { padding-inline: 24px; }
+  .day__list {
+    padding-inline: 24px;
+    scroll-padding-inline: 24px; /* o encaixe da rolagem respeita a margem */
+    gap: 14px;
+  }
+  .moment { flex-basis: min(64vw, 280px); gap: 6px; }
+  .moment__media { border-radius: 20px; }
+  .moment__time { margin-top: 8px; font-size: clamp(1.75rem, 7vw, 2.25rem); }
+  .moment__text { font-size: 0.9375rem; line-height: 1.45; padding-right: 8px; }
+}
