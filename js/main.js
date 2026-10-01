@@ -24,6 +24,7 @@
   const nav = $("[data-nav]");
   const hero = $("[data-hero]");
   const waFloat = $(".wa-float");
+  let lenis = null; // rolagem suave (criada mais abaixo, se o GSAP carregar)
 
   /* ---------- Além da cabana: item ativo troca a imagem ---------- */
   const places = $$(".place-item");
@@ -66,6 +67,206 @@
         if (!entry.isIntersecting && !video.paused) video.pause();
       }, { threshold: 0.25 }).observe(film);
     }
+  }
+
+  /* ---------- Arrastar com o mouse (o toque já desliza nativamente) ---------- */
+  function attachDrag(track, { go, nearest }) {
+    let drag = null;
+    let suppress = false;
+    track.addEventListener("pointerdown", (e) => {
+      if (e.pointerType !== "mouse" || e.button !== 0) return;
+      const now = performance.now();
+      drag = { id: e.pointerId, x: e.clientX, left: track.scrollLeft, moved: false, vx: 0, lastX: e.clientX, lastT: now };
+    });
+    track.addEventListener("pointermove", (e) => {
+      if (!drag) return;
+      const dx = e.clientX - drag.x;
+      if (!drag.moved && Math.abs(dx) > 5) {
+        drag.moved = true;
+        track.classList.add("is-dragging");
+        track.setPointerCapture(drag.id);
+      }
+      if (!drag.moved) return;
+      track.scrollLeft = drag.left - dx;
+      const now = performance.now();
+      drag.vx = (e.clientX - drag.lastX) / Math.max(1, now - drag.lastT);
+      drag.lastX = e.clientX;
+      drag.lastT = now;
+    });
+    const end = () => {
+      if (!drag) return;
+      const { moved, vx } = drag;
+      drag = null;
+      if (!moved) return;
+      suppress = true;
+      setTimeout(() => { suppress = false; }, 60);
+      // Solta na foto mais próxima, respeitando a direção do gesto
+      let i = nearest();
+      const x = track.scrollLeft;
+      const leftOf = (k) => track.children[k].offsetLeft - (parseFloat(getComputedStyle(track).scrollPaddingLeft) || 0);
+      if (vx < -0.25 && leftOf(i) < x - 4) i += 1;
+      if (vx > 0.25 && leftOf(i) > x + 4) i -= 1;
+      go(i);
+      setTimeout(() => track.classList.remove("is-dragging"), 650);
+    };
+    track.addEventListener("pointerup", end);
+    track.addEventListener("pointercancel", end);
+    track.addEventListener("lostpointercapture", end);
+    return () => suppress;
+  }
+
+  /* ---------- Galerias das cabanas ---------- */
+  const pad2 = (n) => String(n).padStart(2, "0");
+  function initGallery(root) {
+    const track = $("[data-gallery-track]", root);
+    const slides = $$(".slide", track);
+    const current = $("[data-current]", root);
+    const progress = $("[data-progress]", root);
+    const prev = $("[data-prev]", root);
+    const next = $("[data-next]", root);
+    let raf = 0;
+
+    const padLeft = () => parseFloat(getComputedStyle(track).scrollPaddingLeft) || 0;
+    const leftOf = (i) => slides[i].offsetLeft - padLeft();
+    const maxLeft = () => track.scrollWidth - track.clientWidth;
+    function nearest() {
+      const x = track.scrollLeft;
+      let best = 0;
+      let d = Infinity;
+      slides.forEach((_, i) => { const dd = Math.abs(leftOf(i) - x); if (dd < d) { d = dd; best = i; } });
+      return best;
+    }
+    function go(i) {
+      const k = Math.max(0, Math.min(slides.length - 1, i));
+      track.scrollTo({ left: Math.min(leftOf(k), maxLeft()), behavior: reduceMotion ? "auto" : "smooth" });
+    }
+    function render() {
+      raf = 0;
+      const x = track.scrollLeft;
+      const max = maxLeft();
+      const atEnd = x >= max - 2;
+      const index = atEnd ? slides.length - 1 : nearest();
+      current.textContent = pad2(index + 1);
+      progress.style.setProperty("--p", max > 0 ? (x / max).toFixed(4) : 1);
+      prev.disabled = x <= 2;
+      next.disabled = atEnd;
+      if (reduceMotion) return;
+      // Profundidade: cada foto se desloca dentro da moldura conforme se afasta do centro.
+      // Primeiro todas as leituras, depois todas as escritas (sem forçar layout no meio).
+      const w = track.clientWidth;
+      const centers = slides.map((s) => s.offsetLeft + s.offsetWidth / 2 - x - w / 2);
+      centers.forEach((c, i) => slides[i].style.setProperty("--shift", (Math.max(-1, Math.min(1, c / w)) * -4).toFixed(2)));
+    }
+    const schedule = () => { if (!raf) raf = requestAnimationFrame(render); };
+    track.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+
+    prev.addEventListener("click", () => go(nearest() - 1));
+    next.addEventListener("click", () => go(nearest() + 1));
+    track.addEventListener("keydown", (e) => {
+      const map = { ArrowRight: 1, ArrowLeft: -1 };
+      if (e.key in map) { e.preventDefault(); go(nearest() + map[e.key]); }
+      else if (e.key === "Home") { e.preventDefault(); go(0); }
+      else if (e.key === "End") { e.preventDefault(); go(slides.length - 1); }
+    });
+
+    const dragged = attachDrag(track, { go, nearest });
+    // Clique numa foto abre a tela cheia (se não foi um arrasto)
+    slides.forEach((s, i) => s.addEventListener("click", () => { if (!dragged()) openViewer(root, i); }));
+    $("[data-expand]", root).addEventListener("click", (e) => openViewer(root, nearest(), e.currentTarget));
+    render();
+  }
+
+  /* ---------- Visualizador em tela cheia ---------- */
+  const viewer = $("[data-viewer]");
+  const vTrack = viewer && $("[data-v-track]", viewer);
+  let returnFocus = null;
+  function vIndex() { return Math.round(vTrack.scrollLeft / Math.max(1, vTrack.clientWidth)); }
+  function vGo(i) {
+    const k = Math.max(0, Math.min(vTrack.children.length - 1, i));
+    vTrack.scrollTo({ left: k * vTrack.clientWidth, behavior: reduceMotion ? "auto" : "smooth" });
+  }
+  function vRender() {
+    const i = vIndex();
+    const total = vTrack.children.length;
+    $("[data-v-current]", viewer).textContent = pad2(i + 1);
+    $("[data-v-caption]", viewer).textContent = vTrack.children[i]?.dataset.caption || "";
+    $("[data-v-prev]", viewer).disabled = i <= 0;
+    $("[data-v-next]", viewer).disabled = i >= total - 1;
+  }
+  function openViewer(root, index, opener) {
+    if (!viewer || typeof viewer.showModal !== "function") return;
+    const figs = $$(".slide", root);
+    $("[data-v-title]", viewer).textContent = root.dataset.title;
+    $("[data-v-total]", viewer).textContent = pad2(figs.length);
+    vTrack.replaceChildren(...figs.map((f, i) => {
+      const src = $("img", f);
+      const fig = document.createElement("figure");
+      fig.className = "viewer__slide";
+      fig.setAttribute("role", "group");
+      fig.setAttribute("aria-roledescription", "foto");
+      fig.setAttribute("aria-label", `${i + 1} de ${figs.length}`);
+      fig.dataset.caption = $("figcaption", f).textContent;
+      const img = new Image();
+      img.src = src.dataset.full;
+      img.alt = src.alt;
+      img.decoding = "async";
+      img.draggable = false;
+      if (Math.abs(i - index) > 1) img.loading = "lazy";
+      fig.append(img);
+      return fig;
+    }));
+    returnFocus = opener || document.activeElement;
+    viewer.showModal();
+    document.documentElement.classList.add("has-viewer");
+    lenis?.stop();
+    vTrack.scrollLeft = index * vTrack.clientWidth;
+    vRender();
+    vTrack.focus({ preventScroll: true });
+  }
+  if (viewer) {
+    let vRaf = 0;
+    vTrack.addEventListener("scroll", () => { if (!vRaf) vRaf = requestAnimationFrame(() => { vRaf = 0; vRender(); }); }, { passive: true });
+    $("[data-v-prev]", viewer).addEventListener("click", () => vGo(vIndex() - 1));
+    $("[data-v-next]", viewer).addEventListener("click", () => vGo(vIndex() + 1));
+    $("[data-v-close]", viewer).addEventListener("click", () => viewer.close());
+    viewer.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight") { e.preventDefault(); vGo(vIndex() + 1); }
+      if (e.key === "ArrowLeft") { e.preventDefault(); vGo(vIndex() - 1); }
+    });
+    viewer.addEventListener("close", () => {
+      document.documentElement.classList.remove("has-viewer");
+      lenis?.start();
+      returnFocus?.focus({ preventScroll: true });
+    });
+    attachDrag(vTrack, { go: vGo, nearest: vIndex });
+    window.addEventListener("resize", () => { if (viewer.open) vTrack.scrollLeft = vIndex() * vTrack.clientWidth; });
+  }
+
+  $$("[data-gallery]").forEach(initGallery);
+
+  /* ---------- Rótulo "Arraste" segue o cursor sobre as galerias (só mouse) ---------- */
+  const dragCursor = $("[data-drag-cursor]");
+  if (dragCursor && finePointer) {
+    let x = 0, y = 0, tx = 0, ty = 0, cRaf = 0;
+    const ease = reduceMotion ? 1 : 0.22;
+    const loop = () => {
+      x += (tx - x) * ease;
+      y += (ty - y) * ease;
+      dragCursor.style.translate = `${x}px ${y}px`;
+      cRaf = Math.abs(tx - x) + Math.abs(ty - y) > 0.2 ? requestAnimationFrame(loop) : 0;
+    };
+    const kick = () => { if (!cRaf) cRaf = requestAnimationFrame(loop); };
+    $$("[data-gallery-track]").forEach((t) => {
+      t.addEventListener("pointerenter", (e) => {
+        if (e.pointerType !== "mouse") return;
+        tx = x = e.clientX; ty = y = e.clientY;
+        dragCursor.classList.add("is-on");
+        kick();
+      });
+      t.addEventListener("pointermove", (e) => { if (e.pointerType === "mouse") { tx = e.clientX; ty = e.clientY; kick(); } });
+      t.addEventListener("pointerleave", () => dragCursor.classList.remove("is-on"));
+    });
   }
 
   /* ---------- Vídeo final: tocar só quando visível ---------- */
@@ -117,7 +318,6 @@
   gsap.defaults({ ease: "expo.out" });
 
   /* ---------- Rolagem suave ---------- */
-  let lenis = null;
   if (typeof window.Lenis !== "undefined") {
     lenis = new window.Lenis({ duration: 1.15, smoothWheel: true, wheelMultiplier: 0.95 });
     lenis.on("scroll", ({ scroll }) => { ScrollTrigger.update(); updateChrome(scroll); });
@@ -223,6 +423,7 @@
     gsap.set(word, { yPercent: 55, autoAlpha: 0 });
     gsap.set(".hero__bg", { scale: 1.14, filter: "blur(8px)" });
     gsap.set(".hero__cabin", { scale: 1.14 });
+    gsap.set(".hero__mist", { opacity: 0 });
 
     /* O momento autoral: a cortina com o S se abre e o SUMONT sobe por trás da cabana */
     const intro = gsap.timeline({ onComplete: () => { curtain?.remove(); lenis?.start(); heroExit(); ScrollTrigger.refresh(); } });
@@ -233,6 +434,7 @@
       .to([".hero__bg", ".hero__cabin"], { scale: 1, duration: 2.2, ease: "expo.out" }, "-=0.75")
       .to(".hero__bg", { filter: "blur(0px)", duration: 1.4, ease: "power2.out" }, "<")
       .to(word, { yPercent: 0, autoAlpha: 1, duration: 1.8 }, "-=1.6")
+      .to(".hero__mist", { opacity: 1, duration: 2.6, ease: "power2.out" }, "<0.3")
       .to(heroLines, { yPercent: 0, duration: 1.2, stagger: 0.09 }, "-=1.3")
       .to(heroFades, { opacity: 1, y: 0, duration: 1, stagger: 0.1 }, "-=0.9")
       .to(stats, { autoAlpha: 1, y: 0, duration: 1, stagger: 0.08 }, "-=0.8")
@@ -319,13 +521,6 @@
         scrollTrigger: { trigger: img.closest(".media"), start: "top bottom", end: "bottom top", scrub: true },
       });
     });
-    $$("[data-float]").forEach((img) => {
-      gsap.fromTo(img, { y: 70 }, {
-        y: -50,
-        ease: "none",
-        scrollTrigger: { trigger: img.closest(".cabin"), start: "top bottom", end: "bottom top", scrub: true },
-      });
-    });
 
     // Nome das cabanas: letras sobem da borda da foto
     $$("[data-name]").forEach((el) => {
@@ -334,7 +529,19 @@
         yPercent: 110,
         duration: 1.4,
         stagger: 0.05,
-        scrollTrigger: { trigger: el.parentElement, start: "top 60%" },
+        scrollTrigger: { trigger: el, start: "top 85%" },
+      });
+    });
+
+    // Galerias: as primeiras fotos entram da direita, a barra logo depois
+    $$("[data-gallery]").forEach((g) => {
+      gsap.from($$(".slide", g).slice(0, 4), {
+        opacity: 0, x: 90, duration: 1.3, stagger: 0.09,
+        scrollTrigger: { trigger: g, start: "top 85%" },
+      });
+      gsap.from($(".gallery__bar", g), {
+        opacity: 0, y: 16, duration: 1,
+        scrollTrigger: { trigger: g, start: "top 75%" },
       });
     });
 

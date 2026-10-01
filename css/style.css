@@ -345,6 +345,41 @@ strong { font-weight: 600; }
 }
 .hero__cabin { z-index: 2; }
 
+/* Névoa: uma camada passa entre o SUMONT e a cabana (cobre as letras, fica atrás da cabana);
+   outra rente ao chão. Só gradientes + transform: nada de filtro de desfoque. */
+.hero__mist {
+  position: absolute;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+.hero__mist--back {
+  z-index: 1;
+  left: -15%;
+  right: -15%;
+  top: 22%;
+  height: 40%;
+  background:
+    radial-gradient(36% 46% at 20% 58%, rgb(255 246 230 / .36), transparent 72%),
+    radial-gradient(30% 40% at 55% 42%, rgb(255 250 240 / .24), transparent 70%),
+    radial-gradient(30% 46% at 86% 62%, rgb(255 244 228 / .30), transparent 72%);
+  animation: mist-drift 46s ease-in-out infinite alternate;
+}
+.hero__mist--front {
+  z-index: 3;
+  left: -20%;
+  right: -20%;
+  bottom: 0;
+  height: 28%;
+  background:
+    radial-gradient(40% 60% at 28% 72%, rgb(255 248 236 / .2), transparent 70%),
+    radial-gradient(36% 55% at 76% 82%, rgb(255 248 236 / .16), transparent 70%);
+  animation: mist-drift 62s ease-in-out infinite alternate-reverse;
+}
+@keyframes mist-drift {
+  from { transform: translate3d(-7%, 0, 0) scale(1); }
+  to { transform: translate3d(7%, -3%, 0) scale(1.08); }
+}
+
 .chip {
   position: absolute;
   z-index: 3;
@@ -458,6 +493,7 @@ strong { font-weight: 600; }
 @media (max-width: 899px) and (orientation: portrait) {
   .hero__scene { width: max(112cqw, calc(100cqh * 0.8056)); aspect-ratio: 1856 / 2304; translate: -46% -50%; }
   .hero__word-pos { left: 46%; bottom: auto; top: 17cqh; }
+  .hero__mist--back { top: 13%; height: 30%; }
 }
 /* Telas estreitas (em pé ou deitadas): tipografia e números do hero */
 @media (max-width: 899px) {
@@ -527,39 +563,30 @@ strong { font-weight: 600; }
 }
 
 /* =========================================================
-   AS CABANAS
+   AS CABANAS — nome, texto e galeria de fotos
    ========================================================= */
 
 .cabins { padding: var(--section-y) var(--pad-x) 0; background: var(--nevoa); }
 .cabins__head { display: grid; gap: 16px; margin-bottom: var(--stack-head); }
 .cabins__head h2 { max-width: 20ch; color: var(--verde-mata); }
-.cabins__head p { max-width: 40ch; font-size: var(--fs-lead); color: var(--texto-suave); }
+.cabins__head p { max-width: 46ch; font-size: var(--fs-lead); color: var(--texto-suave); }
 
-.cabin { margin-bottom: clamp(72px, 9vw, 128px); }
+.cabin { margin-bottom: clamp(88px, 10vw, 144px); }
 .cabin:last-child { margin-bottom: 0; }
 
-.cabin__media { aspect-ratio: 4 / 5; border-radius: var(--radius-lg); }
-.cabin__media::after {
-  content: "";
-  position: absolute;
-  inset: 50% 0 0;
-  background: linear-gradient(to top, rgb(24 33 27 / .55), transparent);
-  pointer-events: none;
-}
+.cabin__head { display: grid; gap: 18px; margin-bottom: clamp(28px, 3vw, 44px); }
 .cabin__name {
-  position: absolute;
-  z-index: 1;
-  left: clamp(20px, 3vw, 48px);
-  bottom: clamp(12px, 2vw, 28px);
-  color: var(--nevoa);
-  font-size: clamp(3.5rem, 8vw, 7.5rem);
+  color: var(--verde-mata);
+  font-size: clamp(3.5rem, 9vw, 8rem);
   line-height: 0.9;
   font-weight: 350;
   letter-spacing: -0.035em;
+  overflow: hidden;              /* as letras sobem por dentro da linha */
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
 }
 .cabin__name .ch { display: inline-block; }
-
-.cabin__body { display: grid; gap: 16px; padding-top: 32px; }
+.cabin__intro { display: grid; gap: 10px; justify-items: start; max-width: 46ch; }
 .cabin__trait {
   font-family: var(--font-display);
   font-variation-settings: "SOFT" 100;
@@ -567,38 +594,250 @@ strong { font-weight: 600; }
   line-height: 1.1;
   color: var(--verde-sumont);
 }
-.cabin__text { max-width: 44ch; color: var(--texto); }
-.cabin__inside {
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  object-fit: cover;
-  border-radius: var(--radius-md);
-  margin-top: 8px;
-}
-.cabin .link { justify-self: start; margin-top: 0; padding-block: 8px; }
+.cabin__text { color: var(--texto); }
+.cabin .link { padding-block: 8px; }
 
 @media (min-width: 900px) {
-  .cabin__media { aspect-ratio: 21 / 10; }
-  .cabin__body {
-    grid-template-columns: 1fr 1.25fr 1fr;
-    grid-template-areas: "trait text inside" "trait link inside";
-    align-items: start;
-    column-gap: clamp(32px, 4vw, 72px);
-    padding-top: clamp(40px, 4vw, 64px);
+  .cabin__head {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 46ch);
+    align-items: end;
+    column-gap: clamp(40px, 6vw, 112px);
   }
-  .cabin__trait { grid-area: trait; }
-  .cabin__text { grid-area: text; }
-  .cabin .link { grid-area: link; }
-  .cabin__inside {
-    grid-area: inside;
-    position: relative;
-    z-index: 2;
-    margin-top: calc(clamp(96px, 10vw, 170px) * -1);
-    box-shadow: 0 30px 60px -28px rgb(24 33 27 / .5);
-  }
-  .cabin--flip .cabin__name { left: auto; right: clamp(20px, 3vw, 48px); }
-  .cabin--flip .cabin__body { grid-template-areas: "inside text trait" "inside link trait"; }
-  .cabin--flip .cabin__trait { text-align: right; }
+  .cabin__intro { padding-bottom: 0.35em; }
+}
+
+/* ---------- Galeria: altura fixa, largura natural de cada foto (nenhuma é cortada) ---------- */
+
+.gallery { --slide-h: clamp(220px, 64vw, 360px); --slide-r: 18px; }
+@media (min-width: 900px) {
+  .gallery { --slide-h: clamp(380px, 60vh, 600px); --slide-r: var(--radius-lg); }
+}
+
+.gallery__track {
+  position: relative;
+  display: flex;
+  gap: clamp(12px, 1.4vw, 20px);
+  /* começa alinhada ao texto e vaza até a borda da tela */
+  margin-inline: calc(var(--pad-x) * -1);
+  padding: 0 var(--pad-x) 6px;
+  scroll-padding-inline: var(--pad-x);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+.gallery__track::-webkit-scrollbar { display: none; }
+.gallery__track:focus-visible { outline: 2px solid var(--verde-salvia); outline-offset: -2px; border-radius: 8px; }
+.gallery__track.is-dragging { scroll-snap-type: none; cursor: grabbing; user-select: none; }
+@media (hover: hover) and (pointer: fine) {
+  .gallery__track { cursor: grab; }
+}
+
+.slide {
+  flex: 0 0 auto;
+  width: min(calc(var(--slide-h) * var(--ar)), calc(100vw - var(--gutter) * 2 - 28px));
+  margin: 0;
+  scroll-snap-align: start;
+}
+.slide__frame {
+  height: var(--slide-h);
+  border-radius: var(--slide-r);
+  overflow: hidden;
+  background: #DCE2DC;
+  isolation: isolate;
+}
+.slide__frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* --shift: deslocamento de profundidade enquanto a faixa desliza (definido pelo JS) */
+  transform: translate3d(calc(var(--shift, 0) * 1%), 0, 0) scale(var(--zoom, 1.08));
+  transition: transform .9s var(--ease-out);
+  -webkit-user-drag: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .slide:hover { --zoom: 1.12; }
+}
+.slide figcaption {
+  padding-top: 12px;
+  font-size: var(--fs-small);
+  line-height: 1.4;
+  color: var(--texto-suave);
+}
+
+.gallery__bar {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 16px 20px;
+  margin-top: 20px;
+}
+.gallery__count {
+  min-width: 5.5ch;
+  font-family: var(--font-display);
+  font-variation-settings: "SOFT" 100;
+  font-size: 1.375rem;
+  line-height: 1;
+  color: var(--verde-mata);
+  font-variant-numeric: lining-nums tabular-nums;
+}
+.gallery__total { font-family: var(--font-body); font-size: var(--fs-small); color: var(--texto-suave); }
+.gallery__progress { position: relative; height: 2px; border-radius: 2px; background: var(--linha); overflow: hidden; }
+.gallery__progress span {
+  position: absolute;
+  inset: 0;
+  background: var(--verde-sumont);
+  transform-origin: left;
+  transform: scaleX(var(--p, 0));
+  transition: transform .45s var(--ease-out);
+}
+.gallery__controls { display: flex; align-items: center; gap: 8px; }
+.gallery__btn,
+.gallery__expand {
+  display: inline-grid;
+  place-items: center;
+  min-width: 48px;
+  height: 48px;
+  border: 1px solid var(--linha);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--verde-mata);
+  cursor: pointer;
+  transition: background-color .3s var(--ease-out), border-color .3s var(--ease-out), color .3s var(--ease-out), opacity .3s;
+}
+.gallery__btn .icon, .gallery__expand .icon { width: 22px; height: 22px; }
+.gallery__expand { display: inline-flex; gap: 8px; padding: 0 18px 0 14px; font: 600 var(--fs-small)/1 var(--font-body); }
+.gallery__btn:hover:not(:disabled),
+.gallery__expand:hover { background: var(--verde-sumont); border-color: var(--verde-sumont); color: var(--branco); }
+.gallery__btn:disabled { opacity: .35; cursor: default; }
+
+/* Celular: desliza com o dedo; ficam o contador, a barra e o botão de tela cheia */
+@media (max-width: 899px) {
+  .gallery__btn { display: none; }
+  .gallery__expand { width: 48px; padding: 0; justify-content: center; }
+  .gallery__expand span { display: none; }
+}
+
+/* ---------- Visualizador em tela cheia ---------- */
+
+.viewer {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  max-height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: #0E1410;
+  color: var(--nevoa);
+  overscroll-behavior: contain;
+}
+.viewer[open] {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  animation: viewer-in .45s var(--ease-out);
+}
+.viewer::backdrop { background: rgb(14 20 16 / .6); }
+html.has-viewer { overflow: hidden; }
+
+.viewer__top {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: max(16px, env(safe-area-inset-top)) clamp(16px, 3vw, 32px) 12px;
+}
+.viewer__title { flex: 1; font-family: var(--font-display); font-variation-settings: "SOFT" 100; font-size: 1.25rem; }
+.viewer__count { font-size: var(--fs-small); color: var(--sobre-noite); font-variant-numeric: tabular-nums; }
+
+.viewer__track {
+  display: flex;
+  min-height: 0;
+  overflow-x: auto;
+  overscroll-behavior: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+.viewer__track::-webkit-scrollbar { display: none; }
+.viewer__track:focus-visible { outline: none; }
+.viewer[open] .viewer__track { animation: viewer-track-in .6s var(--ease-out); }
+.viewer__slide {
+  flex: 0 0 100%;
+  height: 100%;
+  margin: 0;
+  /* flex com altura definida: o max-height da foto passa a valer (a foto inteira cabe na tela) */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  padding: 0 clamp(8px, 4vw, 72px);
+  scroll-snap-align: center;
+}
+.viewer__slide img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 12px;
+  -webkit-user-drag: none;
+}
+
+.viewer__bottom {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) 48px;
+  align-items: center;
+  gap: 16px;
+  padding: 12px clamp(16px, 3vw, 32px) max(16px, env(safe-area-inset-bottom));
+}
+.viewer__caption { text-align: center; font-size: var(--fs-small); color: var(--sobre-noite); }
+.viewer__close,
+.viewer__nav {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border: 1px solid var(--glass-line);
+  border-radius: 50%;
+  background: rgb(255 255 255 / .06);
+  color: var(--nevoa);
+  cursor: pointer;
+  transition: background-color .3s var(--ease-out), opacity .3s;
+}
+.viewer__close .icon, .viewer__nav .icon { width: 22px; height: 22px; }
+.viewer__close:hover, .viewer__nav:hover:not(:disabled) { background: rgb(255 255 255 / .16); }
+.viewer__nav:disabled { opacity: .3; cursor: default; }
+
+@keyframes viewer-in { from { opacity: 0; } }
+@keyframes viewer-track-in { from { opacity: 0; transform: translateY(24px) scale(.98); } }
+
+/* ---------- Rótulo "Arraste" que acompanha o cursor sobre as galerias ---------- */
+
+.drag-cursor {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 70;
+  display: none;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 12px;
+  border-radius: var(--radius-pill);
+  background: var(--verde-mata);
+  color: var(--branco);
+  font: 600 0.8125rem/1 var(--font-body);
+  pointer-events: none;
+  opacity: 0;
+  /* a posição vem do JS (propriedade translate); aqui só o afastamento e a escala */
+  transform: translate(18px, 18px) scale(.6);
+  transform-origin: 0 0;
+  transition: opacity .25s var(--ease-out), transform .35s var(--ease-out);
+}
+.drag-cursor .icon { width: 14px; height: 14px; }
+.drag-cursor.is-on { opacity: 1; transform: translate(18px, 18px) scale(1); }
+@media (hover: hover) and (pointer: fine) {
+  .drag-cursor { display: inline-flex; }
 }
 
 /* =========================================================
@@ -1084,6 +1323,10 @@ strong { font-weight: 600; }
   .wa-float,
   .beyond__frame img { transform: none; }
   .beyond__frame img { filter: none; }
+  .hero__mist { animation: none; }
+  .slide__frame img { transition: none; }
+  .viewer[open], .viewer[open] .viewer__track { animation: none; }
+  .drag-cursor { transition-property: opacity; }
   .faq__list summary::after { transition-property: background-color, border-color; }
   .nav { transition-property: color; }
   .nav.is-hidden { transform: none; }
@@ -1091,7 +1334,7 @@ strong { font-weight: 600; }
 
 /* Celular deitado: as fotos horizontais ficam em quadro horizontal (sem corte lateral) */
 @media (max-width: 899px) and (orientation: landscape) {
-  .cabin__media, .place__figure .media, .share__figure { aspect-ratio: 16 / 9; }
+  .place__figure .media, .share__figure { aspect-ratio: 16 / 9; }
 }
 
 /* Tela baixa e deitada (celular na horizontal): SUMONT menor e mais alto, sem encostar no título */
